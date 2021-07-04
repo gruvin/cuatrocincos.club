@@ -1,0 +1,38 @@
+body {
+  background-color: #00040f;
+}
+.App {
+  width:fit-content;
+  height: 100vh;
+  margin: auto;
+  color: #fff;
+  text-align: center;
+  
+  &-link {
+    color: #61dafb;
+  }
+
+  .logo {
+    width: 100%;
+    max-height: 100vmin;
+    pointer-events: none;
+    filter: saturate(0);
+    &-member {
+      filter: saturate(1);
+    }
+  }
+
+  .col {
+    overflow: hidden;
+    // border: 2px red dashed
+  }
+
+  .stats {
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    display: flex;
+  }
+
+}
+
