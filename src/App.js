@@ -96,7 +96,7 @@ class App extends React.Component {
         totalShares = totalShares.plus(stakeShares)
         if (Number(stakedDays) === 5555) {
           numMaxStakes++
-          if (stakeActive) inTheClub = true
+          inTheClub = true
         }
       })
       this.setState({
@@ -172,10 +172,10 @@ class App extends React.Component {
                     &nbsp;
                     <Badge variant="info">{hexBalance} HEX</Badge>
                     <h1 className="mt-3">STATS</h1>
-                    <p>Total stakes ever: {`${stakeCount}`}</p>
-                    <p>Shortest ever stake: {shortestStake} days</p>
-                    <p>Longest ever stake: {longestStake} days</p>
-                    <p>Currently {numMaxStakes} active Cuatro Cincos Stakes!</p>
+                    <p>Total stakes: {`${stakeCount}`}</p>
+                    <p>Shortest: {shortestStake} days</p>
+                    <p>Longest: {longestStake} days</p>
+                    <p>Number of 5555 stakes: {numMaxStakes}</p>
                     <h2>{inTheClub ? "!! IN DA CLUB <3 :-) !!" : "GTFO n00b! :p"}</h2>
                   </>}
                 </div>
