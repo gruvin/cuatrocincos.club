@@ -2,7 +2,7 @@ $hex-crimson: #ee00aa;
 $hex-orange: #dd6622;
 $hex-yellow: #e0c000;
 $tsa-blue: #009dff;
-$tsa-cyan: #00abd6;
+$tsa-cyan: #0e9fc4;
 $tsa-green: #00bb92;
 $tsa-crimson: #da15e9;
 $tsa-red: #fd3863;
@@ -137,3 +137,6 @@ body {
     margin: 0.1em 0.2em !important; 
   }
 }
+
+@media (min-width: 360px)  { .d-sm-inline { display: inline !important; } }
+

@@ -9,7 +9,6 @@ import {
 } from 'react-bootstrap'
 import './App.scss';
 import ErrorBoundary from './ErrorBoundary'
-// import Cookies from 'universal-cookie'
 import Web3 from 'web3'
 import BN from 'bignumber.js'
 import HEX from './hex_contract'
@@ -39,6 +38,7 @@ class App extends React.Component {
       totalShares: BN(0),
       inTheClub: false,
       stakeAmount: "",
+      showStakeForm: false,
     }
   }
 
@@ -181,6 +181,56 @@ class App extends React.Component {
       .catch(e => debug("Call to stakeStart FAILED: ", e.message))
     }
 
+    const StakeButton = () => (
+      <Button variant="primary" disabled={Number(stakeAmount) < 0.0001}
+        className="mx-0 my-3" size="lg" type="button" block
+        value={stakeAmount}
+        onClick={stakeButtonHandler}
+      >
+        Stake {stakeAmount} HEX<br/>for 5555 days!
+      </Button>
+    )
+
+    const StakeForm = () => (<>
+      <Form>
+        <Form.Group as={Row}>
+          <Form.Label column="lg" className="text-center text-success">
+            <div className="text-muted small">AVAILABLE HEX</div>
+            <div>{BN(hexBalance).toFixed(4)}</div>
+          </Form.Label>
+        </Form.Group>
+        <Form.Group as={Row} className="justify-content-center" controlId="hexAmount">
+          <Col xs="auto">
+            <Form.Control
+              className="text-center"
+              type="number"
+              step="any"
+              size="lg"
+              htmlSize={20}
+              placeholder="HEX stake amount"
+              ref={r => this.hexAmount = r}
+              onChange={amountChangedHandler}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Row>
+          <Col className="mt-1">
+            <Form.Group className="percent-btns" controlId="amountSelector">
+              <Button variant="danger"  onClick={percentButtonHandler} value="10">10%</Button>
+              <Button variant="warning" onClick={percentButtonHandler} value="25">25%</Button>
+              <Button variant="warning" onClick={percentButtonHandler} value="50">50%</Button>
+              <Button variant="info"    onClick={percentButtonHandler} value="75">75%</Button>
+              <Button variant="success" onClick={percentButtonHandler} value="100">100%</Button>
+            </Form.Group>
+          </Col>
+        </Form.Row>
+        <Form.Row>
+          <Col>{StakeButton}</Col>
+        </Form.Row>
+      </Form>    
+      <StakeButton/>  
+    </>)
+
     return (
       <ErrorBoundary>
       <Container className="App p-0 text-center" fluid>
@@ -215,24 +265,25 @@ class App extends React.Component {
                     {inTheClub ? <>
                       <div style={{ marginTop: "-2.5rem", textShadow: "3px 3px 6px #000000" }}>
                         <span>Hexican Cuatro Cincos Club</span>
-                        <div className="text-muted">{account && account.substr(0,6)+"...."+account.substr(-4, 4)}</div>
-                        <div className="text-success">{inTheClub && <b>CERTIFIED MEMBER</b>}</div>
+                        {!this.state.showStakeForm && <>
+                          <div className="text-muted">{account && account.substr(0,6)+"...."+account.substr(-4, 4)}</div>
+                          <div className="text-success">{inTheClub && <b>CERTIFIED MEMBER</b>}</div>
+                        </>}
                       </div>
-                      <Container id="badges" 
-                        style={{ height: "fit-content", minHeight: "30vmin" }}
+                      
+                      {!this.state.showStakeForm && <Container id="badges" 
                         className="d-flex align-content-center justify-content-center"
                       >
-                        <Container className="m-auto">
-                        {/* <p className="text-muted text-uppercase"><b>Qualifing Stakes</b></p> */}
+                        <Container className="pt-3 m-auto">
                         <div>{
                           this.state.stakeList
                           .filter(stake => stake.stakedDays === "5555")
                           .map(s => ( <Image key={s.stakeId} src={imgBadge} /> ))
                         }</div>
                         </Container>
-                      </Container>
-                    </> : <Container className="mx-0 d-raised text-light">
+                      </Container>}
 
+                    </> : <Container className="mx-0 d-raised text-light">
                       <h4 className="mb-3 text-danger text-uppercase">
                         5555 Stake<br/>
                         <span className="blink">Not Found</span>
@@ -240,52 +291,34 @@ class App extends React.Component {
 
                       <h3 className="pt-3">JOIN THE</h3>
                       <h1 className="text-uppercase">Cuatro Cincos Club!</h1>
-                      
-                      <Form>
-                        <Form.Group as={Row}>
-                          <Form.Label column="lg" xs={6} className="text-right text-success">
-                            HEX<span className="d-none d-sm-inline"> Balance</span>
-                          </Form.Label>
-                          <Form.Label column="lg" xs={6} className="text-left text-success">{BN(hexBalance).toFixed(4)}</Form.Label>
-                        </Form.Group>
-                        <Form.Group as={Row} className="justify-content-center" controlId="hexAmount">
-                          <Col xs="auto">
-                            <Form.Control
-                              className="text-center"
-                              type="number"
-                              step="any"
-                              size="lg"
-                              htmlSize={20}
-                              placeholder="HEX stake amount"
-                              ref={r => this.hexAmount = r}
-                              onChange={amountChangedHandler}
-                            />
-                          </Col>
-                        </Form.Group>
-                        <Form.Row>
-                          <Col className="mt-1">
-                            <Form.Group className="percent-btns" controlId="amountSelector">
-                              <Button variant="danger"  onClick={percentButtonHandler} value="10">10%</Button>
-                              <Button variant="warning" onClick={percentButtonHandler} value="25">25%</Button>
-                              <Button variant="warning" onClick={percentButtonHandler} value="50">50%</Button>
-                              <Button variant="info"    onClick={percentButtonHandler} value="75">75%</Button>
-                              <Button variant="success" onClick={percentButtonHandler} value="100">100%</Button>
-                            </Form.Group>
-                          </Col>
-                        </Form.Row>
-                        <Form.Row>
-                          <Col>
-                            <Button variant="primary" disabled={Number(stakeAmount) < 0.0001}
-                              className="mx-0 my-3" size="lg" type="button" block
-                              value={stakeAmount}
-                              onClick={stakeButtonHandler}
-                            >
-                              Stake {stakeAmount} HEX<br/>for 5555 days!
-                            </Button>
-                          </Col>
-                        </Form.Row>
-                      </Form>
+
+                      <StakeForm />
                     </Container>}
+
+                    <Container>
+                    {!this.state.showStakeForm && inTheClub && <>
+                        <div className="mt-3"> </div>
+                        <Button
+                          variant="outline-warning"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => this.setState({ showStakeForm: true })}
+                        >
+                          <strong>EARN ANOTHER BADGE!</strong>
+                        </Button>
+                      </>}
+                      {this.state.showStakeForm && <>
+                        <StakeForm />
+                        <Button 
+                          variant="outline-danger"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => this.setState({ showStakeForm: false })}
+                        >
+                          <strong>CANCEL</strong>
+                        </Button>
+                      </>}
+                    </Container>
 
                     {uriQuery.has('debug') && <Container className="">
                       <Badge variant="secondary">{account}</Badge><br />
