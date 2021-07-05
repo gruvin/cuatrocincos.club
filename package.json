@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^12.1.10",
     "bignumber.js": "^9.0.1",
     "bootstrap": "^4.6",
+    "gsap": "^3.7.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-dom": "^17.0.2",
@@ -23,7 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "rsync -r --exclude='.ht*' --exclude='.D*' --exclude='.Trashes' --delete build/ csc:~/public_html"
+    "deploy": "rsync -r --exclude='.ht*' --exclude='.D*' --exclude='.Trashes' --delete build/ ccc:~/public_html"
   },
   "eslintConfig": {
     "extends": [

@@ -16,8 +16,15 @@ import HEX from './hex_contract'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { OnboardingButton } from './MmOnboarding'
 import imgLogo from './assets/logo.png'
+import imgLogoStamp from './assets/logo-certified.png'
 import imgSpinner from './assets/hex_planet.gif'
+import imgBadge from './assets/badge.png'
+
+import { gsap } from "gsap"
+
 const debug = require('debug')('App')
+
+const uriQuery = new URLSearchParams(window.location.search)
 
 class App extends React.Component {
 
@@ -116,6 +123,16 @@ class App extends React.Component {
         numMaxStakes,
         inTheClub,
       })
+      if (inTheClub) {
+        gsap.timeline()
+        .set(this.imgLogo, { filter: "opacity(1) brightness(1) saturate(1)" } )
+        .set(this.imgStamp, { delay: 0.69,  filter: "opacity(1) brightness(1.3) saturate(1)" })
+        .to(this.imgStamp, {
+          duration: 3,
+          filter: "opacity(0.1) brightness(1) saturate(0)",
+          ease: "power1.in"
+        })
+      }
       //debug(this.state)
     } catch(err) {
       debug("updateAccount FAILED: ", err.message)
@@ -166,10 +183,14 @@ class App extends React.Component {
 
     return (
       <ErrorBoundary>
-      <Container className="App m-0 p-0">
+      <Container className="App p-0 text-center" fluid>
         <Row>
-          <Col className="col-12 col-sm-6">
-            <Image className={"logo p-1"+(this.state.inTheClub ? " logo-member" : "")} src={imgLogo} />
+          {/* <Col className="col-12 col-sm-6 pr-0 pr-sm-3 d-flex align-content-center"> */}
+          <Col className="col-12 d-flex align-content-center">
+            <div className="logo">
+              <Image src={imgLogo} ref={r => this.imgLogo = r} />
+              <Image src={imgLogoStamp} ref={r => this.imgStamp = r} />
+            </div>
           </Col>
           <Col className="text-light text-left">
             <Container className="p-0">
@@ -193,10 +214,34 @@ class App extends React.Component {
                   {contractReady && <> 
 
                     {inTheClub ? <>
-                    </> : <Container className="m-0">
+                      <Container id="badges" 
+                        style={{ height: "fit-content", minHeight: "50vmin" }}
+                        className="d-flex align-content-center justify-content-center"
+                      >
+                        <Container className="m-auto">
+                        <p className="text-light text-uppercase"><b>Qualifing Stakes</b></p>
+                        <div>{
+                          this.state.stakeList
+                          .filter(stake => stake.stakedDays === "5555")
+                          .map(s => ( <Image key={s.stakeId} src={imgBadge} /> ))
+                        }</div>
+                        </Container>
+                      </Container>
+                    </> : <Container className="mx-0 d-raised text-light">
+
+                      <h4 className="mb-3 text-danger text-uppercase">
+                        5555 Stake<br/>
+                        <span className="blink">Not Found</span>
+                      </h4>
+
+                      <h3 className="pt-3">JOIN THE</h3>
+                      <h1 className="text-uppercase">Cuatro Cincos Club!</h1>
+                      
                       <Form>
                         <Form.Group as={Row}>
-                          <Form.Label column="lg" xs={6} className="text-right text-success">HEX Available</Form.Label>
+                          <Form.Label column="lg" xs={6} className="text-right text-success">
+                            HEX<span className="d-none d-sm-inline"> Balance</span>
+                          </Form.Label>
                           <Form.Label column="lg" xs={6} className="text-left text-success">{BN(hexBalance).toFixed(4)}</Form.Label>
                         </Form.Group>
                         <Form.Group as={Row} className="justify-content-center" controlId="hexAmount">
@@ -231,15 +276,14 @@ class App extends React.Component {
                               value={stakeAmount}
                               onClick={stakeButtonHandler}
                             >
-                              JOIN THE 5555 CLUB!<br/>
-                              <span className="small">Stake {stakeAmount} HEX for 5555 days!</span>
+                              Stake {stakeAmount} HEX<br/>for 5555 days!
                             </Button>
                           </Col>
                         </Form.Row>
                       </Form>
                     </Container>}
 
-                    {localStorage.getItem('debug') && <Container className="">
+                    {uriQuery.has('debug') && <Container className="">
                       <Badge variant="secondary">{account}</Badge><br />
                       <Badge variant="primary">{ethBalance} ETH</Badge>
                       &nbsp;

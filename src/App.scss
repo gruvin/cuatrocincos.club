@@ -51,11 +51,13 @@ body {
   background-color: #00040f;
   position: relative;
   overflow-x: hidden;
-  overflow-y: scroll;}
-.App {
+  overflow-y: scroll;
+}
 
-  max-width: 100vmin;  
-  width: fit-content;
+.App {
+  max-width: 414px; // 100vmax; 
+  max-height: 828px;
+  width: 100vw;
   height: 100vh;
   margin: auto;
   color: #fff;
@@ -66,16 +68,72 @@ body {
   }
 
   .logo {
+    position: relative;
+    height: 0;
+    padding-bottom: 100%;
     width: 100%;
-    max-height: 100vmin;
-    pointer-events: none;
-    filter: saturate(0);
-    &-member {
-      filter: saturate(1);
+    max-width: 100vmin;
+    margin: auto 0;
+    > img {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+    > img:first-child {
+      filter:  opacity(0.2) saturate(0);
+    }
+    > img:last-child {
+      filter:  opacity(0) saturate(1);
     }
   }
 
-  .percent-btns > button { margin: 0.1em 0.3em; }
+  .percent-btns > button { padding: 0.15em 0.6em; margin: 0.1em 0.3em; }
 
+  .blink {visibility: hidden; animation: blinking 1s linear infinite; }
+  @keyframes blinking {
+     20% { visibility: hidden; }
+    100% { visibility: visible;}
+  }
 }
 
+@media (max-width: 540px) {
+  .d-raised { margin-top: -55vh; }
+  .percent-btns > button {
+    padding: 0.3em 0.7em !important;
+    margin: 0.15em 0.6em !important; 
+  }
+}
+
+@media (max-width: 414px) {
+  .d-raised { margin-top: -45vh; }
+  .percent-btns > button {
+    padding: 0.3em 0.6em !important;
+    margin: 0.1em 0.5em !important; 
+  }
+}
+
+
+@media (max-width: 375px) {
+  .percent-btns > button {
+    padding: 0.2em 0.5em !important;
+    margin: 0.1em 0.5em !important; 
+  }
+}
+
+@media (max-width: 320px) {
+  .d-raised { margin-top: -57vh; }
+  .percent-btns > button {
+    padding: 0.1em 0.3em !important;
+    margin: 0.1em 0.3em !important; 
+  }
+}
+
+@media (max-width: 280px) {
+  .percent-btns > button {
+    padding: 0.05em 0.2em !important;
+    margin: 0.1em 0.2em !important; 
+  }
+}
