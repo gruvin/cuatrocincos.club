@@ -5,6 +5,7 @@ import {
   Container,
   Image,
   Row, Col,
+  Form
 } from 'react-bootstrap'
 import './App.scss';
 import ErrorBoundary from './ErrorBoundary'
@@ -30,6 +31,7 @@ class App extends React.Component {
       totalStakedHearts: BN(0),
       totalShares: BN(0),
       inTheClub: false,
+      stakeAmount: "",
     }
   }
 
@@ -74,7 +76,7 @@ class App extends React.Component {
     try {
       const wei = BN(await window.ethereum.request({ method: 'eth_getBalance', params: [account, 'latest'] }))
       const hearts = BN(await this.hex.methods.balanceOf(account).call())
-      const currentDay = await this.hex.methods.currentDay().call()
+      // const currentDay = await this.hex.methods.currentDay().call()
       const stakeCount = await this.hex.methods.stakeCount(account).call()
       const stakes = []
       for (let index=0; index < stakeCount; index++) 
@@ -88,8 +90,8 @@ class App extends React.Component {
       let inTheClub = false
       let numMaxStakes = 0
       stakeList.forEach(stake => {
-        const { lockedDay, stakedDays, stakedHearts, stakeShares } = stake
-        const stakeActive = (lockedDay + stakedDays) < currentDay
+        const { /*lockedDay,*/ stakedDays, stakedHearts, stakeShares } = stake
+        // const stakeActive = (lockedDay + stakedDays) < currentDay
         if (Number(stakedDays) < shortestStake) shortestStake = stakedDays
         if (Number(stakedDays) > longestStake) longestStake = stakedDays
         totalStakedHearts = totalStakedHearts.plus(stakedHearts)
@@ -114,10 +116,10 @@ class App extends React.Component {
         numMaxStakes,
         inTheClub,
       })
-      debug(this.state)
+      //debug(this.state)
     } catch(err) {
-      debug("UA ERROR: ", err.message)
-      window.location.reload() // user probably locked MM
+      debug("updateAccount FAILED: ", err.message)
+      window.location.reload() // user most likely locked MM
     }
   }
 
@@ -134,21 +136,43 @@ class App extends React.Component {
       longestStake,
       inTheClub,
       numMaxStakes,
+      stakeAmount,
     } = this.state
 
     const ethBalance = BN(wei).div(1e18).toFixed(4)
     const hexBalance = BN(hearts).div(1e08).toFixed(4)
     const deepLinkAddr =  "cuatrocincos.club"
 
+    const amountChangedHandler = (e) => {
+      this.setState({ stakeAmount: BN(e.currentTarget.value).toFixed(4) })
+    }
+
+    const percentButtonHandler = (e) => {
+      const stakeAmount = BN(e.currentTarget.value).times(hexBalance).div(100).toFixed(4)
+      this.hexAmount.value = stakeAmount
+      this.setState({ stakeAmount })
+    }
+
+    const stakeButtonHandler = (e) => {
+      e.preventDefault()
+
+      this.hex.methods.stakeStart("0x"+BN(this.state.stakeAmount).times(1E08).toString(16), 5555)
+      .send()
+      .then((err, result) => {
+        debug(err, result)
+      })
+      .catch(e => debug("Call to stakeStart FAILED: ", e.message))
+    }
+
     return (
       <ErrorBoundary>
-      <Container className="App p-0" fluid>
+      <Container className="App m-0 p-0">
         <Row>
           <Col className="col-12 col-sm-6">
-            <Image className={"logo"+(this.state.inTheClub ? " logo-member" : "")} src={imgLogo} />
+            <Image className={"logo p-1"+(this.state.inTheClub ? " logo-member" : "")} src={imgLogo} />
           </Col>
-          <Col className="stats text-light text-left">
-            <Container className="p-3">
+          <Col className="text-light text-left">
+            <Container className="p-0">
               {mmOnboard !== false && <>
                 <h1>Let's get connected!</h1>
                 <p>This dApp requires MetaMask Wallet</p>
@@ -164,19 +188,69 @@ class App extends React.Component {
               {mmOnboard === false && <>
                 <div className="text-center">
                   {!contractReady && <p>
-                    <Image src={imgSpinner} /> Connecting to HEX Smart Contract
+                    <Image src={imgSpinner} />&nbsp; Connecting to HEX Smart Contract
                   </p>}
-                  {contractReady && <>
-                    <Badge variant="secondary">{account}</Badge><br />
-                    <Badge variant="primary">{ethBalance} ETH</Badge>
-                    &nbsp;
-                    <Badge variant="info">{hexBalance} HEX</Badge>
-                    <h1 className="mt-3">STATS</h1>
-                    <p>Total stakes: {`${stakeCount}`}</p>
-                    <p>Shortest: {shortestStake} days</p>
-                    <p>Longest: {longestStake} days</p>
-                    <p>Number of 5555 stakes: {numMaxStakes}</p>
-                    <h2>{inTheClub ? "!! IN DA CLUB <3 :-) !!" : "GTFO n00b! :p"}</h2>
+                  {contractReady && <> 
+
+                    {inTheClub ? <>
+                    </> : <Container className="m-0">
+                      <Form>
+                        <Form.Group as={Row}>
+                          <Form.Label column="lg" xs={6} className="text-right text-success">HEX Available</Form.Label>
+                          <Form.Label column="lg" xs={6} className="text-left text-success">{BN(hexBalance).toFixed(4)}</Form.Label>
+                        </Form.Group>
+                        <Form.Group as={Row} className="justify-content-center" controlId="hexAmount">
+                          <Col xs="auto">
+                            <Form.Control
+                              className="text-center"
+                              type="number"
+                              step="any"
+                              size="lg"
+                              htmlSize={20}
+                              placeholder="HEX stake amount"
+                              ref={r => this.hexAmount = r}
+                              onChange={amountChangedHandler}
+                            />
+                          </Col>
+                        </Form.Group>
+                        <Form.Row>
+                          <Col className="mt-1">
+                            <Form.Group className="percent-btns" controlId="amountSelector">
+                              <Button variant="danger"  onClick={percentButtonHandler} value="10">10%</Button>
+                              <Button variant="warning" onClick={percentButtonHandler} value="25">25%</Button>
+                              <Button variant="warning" onClick={percentButtonHandler} value="50">50%</Button>
+                              <Button variant="info"    onClick={percentButtonHandler} value="75">75%</Button>
+                              <Button variant="success" onClick={percentButtonHandler} value="100">100%</Button>
+                            </Form.Group>
+                          </Col>
+                        </Form.Row>
+                        <Form.Row>
+                          <Col>
+                            <Button variant="primary" disabled={Number(stakeAmount) < 0.0001}
+                              className="mx-0 my-3" size="lg" type="button" block
+                              value={stakeAmount}
+                              onClick={stakeButtonHandler}
+                            >
+                              JOIN THE 5555 CLUB!<br/>
+                              <span className="small">Stake {stakeAmount} HEX for 5555 days!</span>
+                            </Button>
+                          </Col>
+                        </Form.Row>
+                      </Form>
+                    </Container>}
+
+                    {localStorage.getItem('debug') && <Container className="">
+                      <Badge variant="secondary">{account}</Badge><br />
+                      <Badge variant="primary">{ethBalance} ETH</Badge>
+                      &nbsp;
+                      <Badge variant="info">{hexBalance} HEX</Badge>
+                      <h1 className="mt-3">STATS</h1>
+                      <p>Total stakes: {`${stakeCount}`}</p>
+                      <p>Shortest: {shortestStake} days</p>
+                      <p>Longest: {longestStake} days</p>
+                      <p>Number of 5555 stakes: {numMaxStakes}</p>
+                      <h2>{inTheClub ? "!! IN DA CLUB <3 :-) !!" : "GTFO n00b! :p"}</h2>
+                    </Container>}
                   </>}
                 </div>
               </>}
