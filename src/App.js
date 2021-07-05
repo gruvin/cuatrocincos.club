@@ -185,14 +185,13 @@ class App extends React.Component {
       <ErrorBoundary>
       <Container className="App p-0 text-center" fluid>
         <Row>
-          {/* <Col className="col-12 col-sm-6 pr-0 pr-sm-3 d-flex align-content-center"> */}
           <Col className="col-12 d-flex align-content-center">
             <div className="logo">
               <Image src={imgLogo} ref={r => this.imgLogo = r} />
               <Image src={imgLogoStamp} ref={r => this.imgStamp = r} />
             </div>
           </Col>
-          <Col className="text-light text-left">
+          <Col className="text-light text-center">
             <Container className="p-0">
               {mmOnboard !== false && <>
                 <h1>Let's get connected!</h1>
@@ -214,12 +213,17 @@ class App extends React.Component {
                   {contractReady && <> 
 
                     {inTheClub ? <>
+                      <div style={{ marginTop: "-2.5rem", textShadow: "3px 3px 6px #000000" }}>
+                        <span>Hexican Cuatro Cincos Club</span>
+                        <div className="text-muted">{account && account.substr(0,6)+"...."+account.substr(-4, 4)}</div>
+                        <div className="text-success">{inTheClub && <b>CERTIFIED MEMBER</b>}</div>
+                      </div>
                       <Container id="badges" 
-                        style={{ height: "fit-content", minHeight: "50vmin" }}
+                        style={{ height: "fit-content", minHeight: "30vmin" }}
                         className="d-flex align-content-center justify-content-center"
                       >
                         <Container className="m-auto">
-                        <p className="text-light text-uppercase"><b>Qualifing Stakes</b></p>
+                        {/* <p className="text-muted text-uppercase"><b>Qualifing Stakes</b></p> */}
                         <div>{
                           this.state.stakeList
                           .filter(stake => stake.stakedDays === "5555")
