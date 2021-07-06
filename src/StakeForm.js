@@ -81,8 +81,8 @@ class StakeForm extends React.Component {
               <Button variant="danger" onClick={percentButtonHandler} value="10">10%</Button>
               <Button variant="warning" onClick={percentButtonHandler} value="25">25%</Button>
               <Button variant="warning" onClick={percentButtonHandler} value="50">50%</Button>
-              <Button variant="success" onClick={percentButtonHandler} value="100">100%</Button>
               <Button variant="info" onClick={percentButtonHandler} value="75">75%</Button>
+              <Button variant="success" onClick={percentButtonHandler} value="100">100%</Button>
             </Form.Group>
           </Col>
         </Form.Row>
