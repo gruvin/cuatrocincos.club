@@ -25,7 +25,7 @@ class ErrorBoundary extends React.Component {
                 <Container className="p-3 bg-dark text-light">
                     <h1>Oops!</h1>
                     <h2 className="text-danger">Something went wrong.</h2>
-                    <p>{this.state.error.split(/[.,:]/)[0]}.</p>
+                    <p>{this.state.error.split(/[.,:;]/)[0]}.</p>
                 </Container>
             </>)
         }

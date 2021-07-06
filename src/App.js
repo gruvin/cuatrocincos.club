@@ -5,15 +5,17 @@ import {
   Container,
   Image,
   Row, Col,
-  Form
 } from 'react-bootstrap'
-import './App.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.scss'
 import ErrorBoundary from './ErrorBoundary'
 import Web3 from 'web3'
 import BN from 'bignumber.js'
 import HEX from './hex_contract'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { OnboardingButton } from './MmOnboarding'
+import StakeForm from './StakeForm'
+
 import imgLogo from './assets/logo.png'
 import imgLogoStamp from './assets/logo-certified.png'
 import imgSpinner from './assets/hex_planet.gif'
@@ -37,7 +39,6 @@ class App extends React.Component {
       totalStakedHearts: BN(0),
       totalShares: BN(0),
       inTheClub: false,
-      stakeAmount: "",
       showStakeForm: false,
     }
   }
@@ -139,74 +140,6 @@ class App extends React.Component {
       window.location.reload() // user most likely locked MM
     }
   }
-  
-  percentButtonHandler = (e) => {
-    const stakeAmount = BN(e.target.value).times(this.state.hearts).div(1E08).div(100).toFixed(4)
-    this.setState({ stakeAmount })
-  }
-
-  stakeButtonHandler = (e) => {
-    e.preventDefault()
-
-    this.hex.methods.stakeStart("0x"+BN(this.state.stakeAmount).times(1E08).toString(16), 5555)
-    .send()
-    .then((err, result) => {
-      debug(err, result)
-    })
-    .catch(e => debug("Call to stakeStart FAILED: ", e.message))
-  }
-
-  StakeButton = () => {
-    const { stakeAmount } = this.state
-    return (
-      <Button variant="primary" disabled={Number(stakeAmount) < 0.0001}
-        className="mx-0 my-3" size="lg" type="button" block
-        value={stakeAmount}
-        onClick={this.stakeButtonHandler}
-      >
-        Stake {stakeAmount} HEX<br/>for 5555 days!
-      </Button>
-    )
-  }
-
-  StakeForm = () => (<>
-    <Form>
-      <Form.Group as={Row} className="mb-0">
-        <Form.Label column="lg" className="text-center text-success">
-          <div className="text-muted small">AVAILABLE HEX</div>
-          <div>{BN(this.state.hearts).div(1E08).toFixed(4)}</div>
-        </Form.Label>
-      </Form.Group>
-      <Form.Group as={Row} className="justify-content-center" controlId="hexAmount">
-        <Col xs="auto">
-          <Form.Control
-            className="text-center"
-            type="number"
-            step="any"
-            size="lg"
-            htmlSize={20}
-            placeholder="HEX stake amount"
-            value={this.state.stakeAmount}
-            onChange={e => this.setState({ stakeAmount: e.target.value }) }
-          />
-        </Col>
-      </Form.Group>
-      <Form.Row>
-        <Col className="mt-1">
-          <Form.Group className="percent-btns" controlId="amountSelector">
-            <Button variant="danger"  onClick={this.percentButtonHandler} value="10">10%</Button>
-            <Button variant="warning" onClick={this.percentButtonHandler} value="25">25%</Button>
-            <Button variant="warning" onClick={this.percentButtonHandler} value="50">50%</Button>
-            <Button variant="info"    onClick={this.percentButtonHandler} value="75">75%</Button>
-            <Button variant="success" onClick={this.percentButtonHandler} value="100">100%</Button>
-          </Form.Group>
-        </Col>
-      </Form.Row>
-      <Form.Row>
-        <Col><this.StakeButton /></Col>
-      </Form.Row>
-    </Form>    
-  </>)
 
   render() {
     const {
@@ -289,7 +222,7 @@ class App extends React.Component {
                       <h3 className="pt-3">JOIN THE</h3>
                       <h1 className="text-uppercase">Cuatro Cincos Club!</h1>
 
-                      <this.StakeForm />
+                      <StakeForm parent={this} />
                     </Container>}
 
                     <Container>
@@ -305,7 +238,7 @@ class App extends React.Component {
                         </Button>
                       </>}
                       {this.state.showStakeForm && <>
-                        <this.StakeForm />
+                        <StakeForm parent={this} />
                         <Button 
                           variant="outline-danger"
                           size="sm"
