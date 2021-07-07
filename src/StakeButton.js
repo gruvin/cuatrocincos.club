@@ -6,7 +6,7 @@ import {
     Image,
 } from 'react-bootstrap'
 import BN from 'bignumber.js'
-import _Web3SendTester from './Web3SendTester'
+// import _Web3SendTester from './Web3SendTester'
 import imgWait from './assets/wait-blocks.gif'
 
 const debug = require('debug')('StakeForm')
@@ -95,8 +95,9 @@ class StakeButton extends React.Component {
     const { stakeAmount } = this.state
     this.setState({ state: STATES.REQUESTING })
 
-    const __fn = (uriQuery.has('fakeweb3')) ? _Web3SendTester : this.parent.hex.methods.stakeStart
-    __fn("0x"+BN(stakeAmount).times(1E08).toString(16), 5555)
+    // const __fn = (uriQuery.has('fakeweb3')) ? _Web3SendTester : this.parent.hex.methods.stakeStart
+    // __fn("0x"+BN(stakeAmount).times(1E08).toString(16), 5555)
+    this.parent.hex.methods.stakeStart("0x"+BN(stakeAmount).times(1E08).toString(16), 5555)
     .send()
     .on('transactionHash', txHash => {
       this.setState({ state: STATES.SENT, txHash })
@@ -163,6 +164,9 @@ class StakeButton extends React.Component {
           <h2>Oops!</h2>
           <p>{this.state.error}</p>
         </>
+        window.setTimeout(() => {
+          this.setState({ state: STATES.INIT })
+        }, 3000)
         break
     }
 
