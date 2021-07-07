@@ -14,7 +14,7 @@ import BN from 'bignumber.js'
 import HEX from './hex_contract'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { OnboardingButton } from './MmOnboarding'
-import StakeForm from './StakeForm'
+import StakeButton from './StakeButton'
 
 import imgLogo from './assets/logo.png'
 import imgLogoStamp from './assets/logo-certified.png'
@@ -80,7 +80,16 @@ class App extends React.Component {
     provider.on('disconnect', () => window.location.reload() ) // chain's RPC network connection was lost
   }
 
+  refresh() {
+    window.location.reload()
+  }
+
   async updateAccount(account) {
+    if (typeof account === 'undefined') account = this.state.account
+    gsap.timeline()
+      .set(this.imgLogo, { filter: "opacity(0.2) saturate(0)" } )
+      .set(this.imgStamp, { delay: 0.69,  filter: "opacity(0) saturate(1)" }, "<")
+
     try {
       const wei = BN(await window.ethereum.request({ method: 'eth_getBalance', params: [account, 'latest'] }))
       const hearts = BN(await this.hex.methods.balanceOf(account).call())
@@ -208,7 +217,7 @@ class App extends React.Component {
                         <div>{
                           this.state.stakeList
                           .filter(stake => stake.stakedDays === "5555")
-                          .map(s => ( <Image key={s.stakeId} src={imgBadge} /> ))
+                          .map(s => ( <Image className="cccBadge" key={s.stakeId} src={imgBadge} /> ))
                         }</div>
                         </Container>
                       </Container>}
@@ -222,7 +231,7 @@ class App extends React.Component {
                       <h3 className="pt-3">JOIN THE</h3>
                       <h1 className="text-uppercase">Cuatro Cincos Club!</h1>
 
-                      <StakeForm parent={this} />
+                      <StakeButton parent={this} />
                     </Container>}
 
                     <Container>
@@ -238,15 +247,7 @@ class App extends React.Component {
                         </Button>
                       </>}
                       {this.state.showStakeForm && <>
-                        <StakeForm parent={this} />
-                        <Button 
-                          variant="outline-danger"
-                          size="sm"
-                          className="mt-3"
-                          onClick={() => this.setState({ showStakeForm: false })}
-                        >
-                          <strong>CANCEL</strong>
-                        </Button>
+                        <StakeButton parent={this} />
                       </>}
                     </Container>
 
