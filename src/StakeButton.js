@@ -10,7 +10,7 @@ import BN from 'bignumber.js'
 import imgWait from './assets/wait-blocks.gif'
 
 const debug = require('debug')('StakeForm')
-const uriQuery = new URLSearchParams(window.location.search)
+// const uriQuery = new URLSearchParams(window.location.search)
 
 function createEnum(values) {
   const enumObject = {};
@@ -131,7 +131,7 @@ class StakeButton extends React.Component {
         content = <>
           Stake {stakeAmount} HEX<br/>for 5555 days!</>
         break
-        case STATES.REQUESTING:
+      case STATES.REQUESTING:
           variant = "outline-info"
           className = "text-info"
           content = <>Requesting ...</>
@@ -140,7 +140,11 @@ class StakeButton extends React.Component {
         variant = "outline-info"
         className = "text-light"
         content = <>
-          <p>txHash: {this.state.txHash}</p>
+          <p className="small">txHash: 
+            <a href={`https://etherscan.io/tx/${this.state.txHash}`} target="_blank" rel="noreferrer">
+              {this.state.txHash.substr(0, 8)+"...."+this.state.txHash.substr(-8, 8)}
+            </a>
+          </p>
           <Image src={imgWait} width="32" /> Awaiting Confirmation
         </>
         break
